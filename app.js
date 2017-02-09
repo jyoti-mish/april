@@ -21,17 +21,27 @@ let bodyParser = require('body-parser');
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
+const NAME_ACTION = 'SettempIntent';
+const SETPOINT_ARGUMENT = 'SetPoint';
+const NUMBER_ARGUMENT = 'Temp';
+
 // [START YourAction]
 app.post('/', function (req, res) {
   const assistant = new Assistant({request: req, response: res});
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
 
-  // Fulfill action business logic
-  function responseHandler (assistant) {
-    // Complete your fulfillment logic and send a response
-    assistant.tell('Hello, World!');
+  function makeName (assistant) {
+    let number = assistant.getArgument(NUMBER_ARGUMENT);
+    let color = assistant.getArgument(SETPOINT_ARGUMENT);
+    assistant.tell('Alright, your silly name is ' +
+      color + ' ' + number +
+      '! I hope you like it. See you next time.');
   }
+
+  let actionMap = new Map();
+  actionMap.set(NAME_ACTION, makeName);
+
 
   assistant.handleRequest(responseHandler);
 });
