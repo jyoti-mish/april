@@ -21,7 +21,8 @@ let bodyParser = require('body-parser');
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
-const NAME_ACTION = 'SettempIntent';
+const Temp_ACTION = 'SettempIntent';
+const status_ACTION = 'SetStatusIntent';
 const SETPOINT_ARGUMENT = 'SetPoint';
 const NUMBER_ARGUMENT = 'Temp';
 
@@ -30,17 +31,22 @@ app.post('/', function (req, res) {
   const assistant = new Assistant({request: req, response: res});
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
-
+  let color = assistant.getArgument(SETPOINT_ARGUMENT);
   function makeName (assistant) {
     let number = assistant.getArgument(NUMBER_ARGUMENT);
-    let color = assistant.getArgument(SETPOINT_ARGUMENT);
+  //  let color = assistant.getArgument(SETPOINT_ARGUMENT);
     assistant.tell('Alright, your silly name is ' +
       color + ' ' + number +
       '! I hope you like it. See you next time.');
   }
-
-  let actionMap = new Map();
-  actionMap.set(NAME_ACTION, makeName);
+if(color.toLowerCase()=='heatsetpoint'||color.toLowerCase()=='coolsetpoint')
+{  let actionMap = new Map();
+  actionMap.set(Temp_ACTION, makeName);
+}
+else{
+	let actionMap = new Map();
+  actionMap.set(status_ACTION, makeName);
+}
 
 
   assistant.handleRequest(responseHandler);
